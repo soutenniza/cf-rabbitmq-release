@@ -45,9 +45,10 @@
 	path = src/github.com/cloudfoundry-incubator/candiedyaml
 	url = https://github.com/cloudfoundry-incubator/candiedyaml
 	branch = master
-[submodule "src/github.com/streadway/amqp"]
-	path = src/github.com/streadway/amqp
-	url = https://github.com/streadway/amqp
 [submodule "src/github.com/pivotal-cf/cf-rabbitmq-smoke-tests"]
 	path = src/github.com/pivotal-cf/cf-rabbitmq-smoke-tests
 	url = git@github.com:pivotal-cf/cf-rabbitmq-smoke-tests
+[submodule "src/github.com/michaelklishin/rabbit-hole"]
+	path = src/github.com/michaelklishin/rabbit-hole
+	url = https://github.com/michaelklishin/rabbit-hole
+	branch = master
