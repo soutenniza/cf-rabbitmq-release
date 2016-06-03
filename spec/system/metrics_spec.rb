@@ -24,10 +24,7 @@ RSpec.describe 'metrics', :metrics => true do
         wait_for(job: @rmq_broker_host, status: 'running')
 
         @firehose = Matchers::Firehose.new(doppler_address: doppler_address, access_token: cf.auth_token)
-      end
-
-      after(:all) do
-        @firehose.close
+        @firehose.read_logs_for(time:400)
       end
 
       it 'contains haproxy_z1 heartbeat metric for rabbitmq haproxy nodes' do
@@ -89,11 +86,10 @@ RSpec.describe 'metrics', :metrics => true do
         wait_for(job: @rmq_broker_host, status: 'not monitored$')
 
         @firehose = Matchers::Firehose.new(doppler_address: doppler_address, access_token: cf.auth_token)
+        @firehose.read_logs_for(time:400)
       end
 
       after(:all) do
-        @firehose.close
-
         ssh_gateway.execute_on(@haproxy_z1_host, '/var/vcap/bosh/bin/monit start rabbitmq-haproxy', :root => true)
         ssh_gateway.execute_on(@rmq_z1_host, '/var/vcap/bosh/bin/monit start rabbitmq-server', :root => true)
         ssh_gateway.execute_on(@rmq_z2_host, '/var/vcap/bosh/bin/monit start rabbitmq-server', :root => true)

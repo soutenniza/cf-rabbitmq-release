@@ -2,78 +2,64 @@ require 'rspec/expectations'
 require 'yaml'
 
 module Matchers
-  class << self
-    attr_accessor :prints_logs_on_failure
-  end
-
-  self.prints_logs_on_failure = false
-
   class Firehose
+    attr_reader :log_lines
+
     def initialize(doppler_address:, access_token:)
       @doppler_address = doppler_address
       @access_token = access_token
+    end
 
-      @file = Tempfile.new('smetrics')
-      @pid = spawn(
+    def read_logs_for(time: 300)
+      puts "Firehose is reading logs..."
+
+      file = Tempfile.new('smetrics')
+      pid = spawn(
         {
           'DOPPLER_ADDR' => @doppler_address,
           'CF_ACCESS_TOKEN' => @access_token,
         },
         'firehose',
-        [:out, :err] => [@file.path, 'w']
+        [:out, :err] => [file.path, 'w']
       )
-    end
-
-    def close
-      Process.kill("INT", @pid)
-
-      @file.close
-      @file.unlink
-    end
-
-    def read_log
-      read_file = File.open(@file.path)
-      yield(read_file)
+      sleep time
+      @log_lines = file.readlines
     ensure
-      read_file.close
+      Process.kill("INT", pid)
+      file.close
+      file.unlink
     end
   end
 
-  RSpec::Matchers.define :have_metric do |job_name, job_index, metric_regex_pattern, polling_interval: 400|
+  RSpec::Matchers.define :have_metric do |job_name, job_index, metric_regex_pattern|
     match do |firehose|
-      metric_exist = false
+      @actual = firehose.log_lines
 
-      firehose.read_log do |file|
-        polling_interval.times do
-          lines = file.readlines
-          @actual = lines
+      metric_exist = firehose.log_lines.grep(metric_regex_pattern).any? do |metric|
+        matched = metric.include? 'origin:"p-rabbitmq"'
+        matched &= metric.include? "deployment:\"#{deployment_name}\""
+        matched &= metric.include? 'eventType:ValueMetric'
+        matched &= metric =~ /job:\".*#{job_name}.*\"/
+          matched &= metric.include? "index:\"#{job_index}\""
 
-          metric_exist = lines.grep(metric_regex_pattern).any? do |metric|
-            matched = metric.include? 'origin:"p-rabbitmq"'
-            matched &= metric.include? "deployment:\"#{deployment_name}\""
-            matched &= metric.include? 'eventType:ValueMetric'
-            matched &= metric =~ /job:\".*#{job_name}.*\"/
-              matched &= metric.include? "index:\"#{job_index}\""
-
-            matched &= metric =~ /timestamp:\d/
-            matched &= metric =~ /ip:"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"/
-          end
-
-          break if metric_exist
-          sleep 1
-        end
+        matched &= metric =~ /timestamp:\d/
+        matched &= metric =~ /ip:"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"/
       end
+
       metric_exist
     end
 
     failure_message do |actual|
-      msg = "expected to contains metric '#{metric_regex_pattern}' for job '#{job_name}' with index '#{job_index}'"
+      tmp_dir = Dir.mktmpdir("metrics")
+      log_file_path = File.join(tmp_dir, "test_output_#{Time.now.to_i}.log")
 
-      if Matchers::prints_logs_on_failure
-        msg << actual.join('\n')
-      end
+      FileUtils.touch(log_file_path)
 
-      msg
+      file = File.open(log_file_path, 'w')
+      file.write(@actual.join)
+      file.close
+
+      "expected file #{file.path} to contains metric '#{metric_regex_pattern}' for job '#{job_name}' with index '#{job_index}'"
     end
   end
 
