@@ -67,14 +67,17 @@ properties:
     description: "Syslog drain port"
 
 templates:
-  plugins.sh.erb:                   bin/plugins.sh
-  rabbitmq-server.init.erb:         bin/rabbitmq-server.init
-  setup.sh.erb:                     bin/setup.sh
-  node_name_migration.sh:           bin/node_name_migration.sh
-  rabbitmq.config.erb:              etc/rabbitmq.config
-  cacert.pem.erb:                   etc/cacert.pem
-  cert.pem.erb:                     etc/cert.pem
-  key.pem.erb:                      etc/key.pem
-  pre-start.erb:                    bin/pre-start
-  syslog_forwarder.conf.erb:        config/syslog_forwarder.conf
-  rabbitmq_syslog.conf.erb:         config/rabbitmq_syslog.conf
+  plugins.sh.erb:             bin/plugins.sh
+  rabbitmq-server.init.erb:   bin/rabbitmq-server.init
+  setup.sh.erb:               bin/setup.sh
+  node_name_migration.sh:     bin/node_name_migration.sh
+  rabbitmq.config.erb:        etc/rabbitmq.config
+  cacert.pem.erb:             etc/cacert.pem
+  cert.pem.erb:               etc/cert.pem
+  key.pem.erb:                etc/key.pem
+  pre-start.erb:              bin/pre-start
+  post-start.bash:            bin/post-start
+  commands/post-start:        bin/commands/post-start
+  commands/rabbitmqctl:       bin/commands/rabbitmqctl
+  syslog_forwarder.conf.erb:  config/syslog_forwarder.conf
+  rabbitmq_syslog.conf.erb:   config/rabbitmq_syslog.conf

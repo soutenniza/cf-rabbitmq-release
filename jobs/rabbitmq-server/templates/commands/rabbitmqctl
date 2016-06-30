@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+export PATH=/var/vcap/packages/erlang/bin:/var/vcap/packages/rabbitmq-server/privbin:$PATH
+export RABBITMQ_PID_FILE=/var/vcap/sys/run/rabbitmq-server/pid
+
+rabbitmq_wait_with_timeout_in_seconds() {
+  local seconds
+  seconds="$1"
+
+  timeout "$seconds" rabbitmqctl wait
+}
+
+rabbitmq_create_user() {
+  local username password
+  username="${1:? username argument required }"
+  password="${1:? password argument required }"
+
+  rabbitmqctl add_user "$username" "$password"
+}

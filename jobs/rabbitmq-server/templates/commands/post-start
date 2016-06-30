@@ -1,0 +1,21 @@
+#!/bin/bash -e
+
+BASE_PATH="${BASE_PATH:-/var/vcap/jobs/rabbitmq-server/bin/commands}"
+
+# shellcheck disable=SC1090
+. "$BASE_PATH/rabbitmqctl"
+
+exit_if_rabbitmq_app_not_running_in_seconds() {
+  local seconds check_rmq_app
+  seconds="${1:? seconds argument required }"
+  check_rmq_app="${2:-rabbitmq_wait_with_timeout_in_seconds}"
+
+  # shellcheck disable=SC2086
+  if $check_rmq_app $seconds
+  then
+    echo "RabbitMQ app is running"
+  else
+    echo "RabbitMQ app is not running after $seconds seconds"
+    exit 0
+  fi
+}
