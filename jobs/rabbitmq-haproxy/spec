@@ -1,12 +1,12 @@
 ---
 name: rabbitmq-haproxy
+
 packages:
 - haproxy
 - route-registrar
 - syslog_aggregator
+
 properties:
-  rabbitmq-haproxy.server_ips:
-    description: "List of IP addresses for the RabbitMQ cluster to proxy"
   rabbitmq-haproxy.ports:
     description: "List of ports (as string!) to forward to the RabbitMQ cluster"
   rabbitmq-haproxy.stats.username:
@@ -24,12 +24,13 @@ properties:
 
   route_registrar.message_bus_servers:
     description: List of NATS (host/user/password), where host is specified as "IP:PORT"
-  
+
 
   syslog_aggregator.address:
     description: "Syslog drain hostname"
   syslog_aggregator.port:
     description: "Syslog drain port"
+
 templates:
   rabbitmq-haproxy.init.erb:  bin/rabbitmq-haproxy.init
   haproxy.config.erb:         haproxy.config
@@ -38,3 +39,7 @@ templates:
   haproxy_syslog.conf.erb:    config/haproxy_syslog.conf
   route_registrar_ctl.erb:    bin/route_registrar_ctl
   management_registrar_settings.yml.erb: config/management_registrar_settings.yml
+
+consumes:
+  - name: rabbitmq-server
+    type: rabbitmq-server
