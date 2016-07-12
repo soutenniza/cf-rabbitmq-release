@@ -5,7 +5,7 @@ message_bus_servers:
     user: <%= server["user"] %>
     password: <%= server["password"] %>
   <% end %>
-host: <%= p('rabbitmq-broker.rabbitmq.management_ip') %>
+host: <%= spec.address %>
 routes:
   - name: <%= p('rabbitmq-broker.rabbitmq.management_domain') %>
     registration_interval: <%= p('rabbitmq-broker.registration_interval')%>

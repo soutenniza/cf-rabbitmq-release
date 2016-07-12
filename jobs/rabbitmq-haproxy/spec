@@ -19,12 +19,8 @@ properties:
     description: "How often the registrar should send messages to the router"
   rabbitmq-broker.rabbitmq.management_domain:
     description: "Domain that will be used to access RabbitMQ management UI, typically the system CF/CC domain."
-  rabbitmq-broker.rabbitmq.management_ip:
-    description: "IP address RabbitMQ management UI requests will be routed to, typically that of RabbitMQ HAproxy VM"
-
   route_registrar.message_bus_servers:
     description: List of NATS (host/user/password), where host is specified as "IP:PORT"
-
 
   syslog_aggregator.address:
     description: "Syslog drain hostname"
