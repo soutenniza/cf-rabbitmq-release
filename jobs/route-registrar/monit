@@ -1,0 +1,5 @@
+check process management-route-registrar
+  with pidfile  "/var/vcap/sys/run/management-route-registrar/management-route-registrar.pid"
+  start program "/var/vcap/jobs/route-registrar/bin/route_registrar_ctl start management" with timeout 10 seconds
+  stop  program "/var/vcap/jobs/route-registrar/bin/route_registrar_ctl stop management"  with timeout 10 seconds
+  group vcap

@@ -118,7 +118,7 @@ start)
   cd /var/vcap/packages/route-registrar
 
   exec chpst -u vcap:vcap /var/vcap/packages/route-registrar/route-registrar \
-    -configPath /var/vcap/jobs/rabbitmq-haproxy/config/${2}_registrar_settings.yml \
+    -configPath /var/vcap/jobs/route-registrar/config/${2}_registrar_settings.yml \
     >>$LOG_DIR/route-registrar.stdout.log
     2>>$LOG_DIR/route-registrar.stderr.log
 ;;
