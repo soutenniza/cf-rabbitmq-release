@@ -61,6 +61,14 @@ properties:
     description: "Cluster partition recover mode property. Vald values are: pause_minority, autoheal"
     default: "pause_minority"
 
+  rabbitmq-server.allow_amqp:
+    default: nil
+    description: |
+      Takes a true/false/nil
+        nil   - if amqps is enabled (rabbitmq-server.ssl.*: has values) disables non-tls-amqp.
+        true  - Always allow amqp (even if using amqps)
+        false - Never allow amqp (even if not use amqps)
+
   syslog_aggregator.address:
     description: "Syslog drain hostname"
   syslog_aggregator.port:

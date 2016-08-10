@@ -13,6 +13,8 @@ end
 network ||= networks.first
 job_ip = network.ip
 
+allow_amqp = p("rabbitmq-server.allow_amqp")
+
 ssl = false
 if_p("rabbitmq-server.ssl.key") do |key|
   if key
@@ -139,10 +141,14 @@ disk_alarm_threshold = p("rabbitmq-server.disk_alarm_threshold")
   SERVER_START_ARGS="${SERVER_START_ARGS} -rabbitmq_management http_log_dir \"${LOG_DIR}\""
 
 <% if ssl %>
-  # if TLS is enabled, disable the non-TLS listener for AMQP 0-9-1 and make the management/HTTP API
-  # listener use TLS.
-  SERVER_START_ARGS="${SERVER_START_ARGS} -rabbit tcp_listeners [] -rabbit ssl_listeners [5671] -rabbitmq_management listener [{port,15672},{ssl,false}] -rabbitmq_mqtt ssl_listeners [8883] -rabbitmq_stomp ssl_listeners [61614]"
+  # if TLS is enabled make the management/HTTP API listener use TLS.
+  SERVER_START_ARGS="${SERVER_START_ARGS} -rabbit ssl_listeners [5671] -rabbitmq_management listener [{port,15672},{ssl,false}] -rabbitmq_mqtt ssl_listeners [8883] -rabbitmq_stomp ssl_listeners [61614]"
 <% end %>
+
+<% if allow_amqp == false || (allow_amqp == nil && ssl) %>
+  SERVER_START_ARGs="${SERVER_START_ARGS} -rabbit tcp_listener []"
+<% end %>
+
   # enclosing single quote, see the concatenation comment above
   SERVER_START_ARGS="${SERVER_START_ARGS}'"
   <% if ssl %>
