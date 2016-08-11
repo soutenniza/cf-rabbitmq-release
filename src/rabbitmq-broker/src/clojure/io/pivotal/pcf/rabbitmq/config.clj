@@ -122,6 +122,13 @@
                                   "costs"       [pcf-product-cost]
                                   "bullets"     ["RabbitMQ 3.6.3" "Multi-tenant"]}}]}))
 
+(defn broker-using-https?
+  ([]
+    (broker-using-https? final-config))
+  ([m]
+    (not (not (or (get-in m [:rabbitmq :service_broker_ssl])
+                  (get-in m [:rabbitmq :tls]))))))
+
 (defn using-tls?
   ([]
      (using-tls? final-config))
@@ -177,7 +184,7 @@
   ([]
      (http-scheme final-config))
   ([m]
-     (if (using-tls? m)
+     (if (broker-using-https? m)
        "https"
        "http")))
 
@@ -212,5 +219,5 @@
      (rabbitmq-administrator-uris final-config))
   ([m]
      (mapv
-       #(format "http://%s:%d" % management-ui-port)
+       #(format "%s://%s:%d" http-scheme % management-ui-port)
        (node-hosts m))))
