@@ -38,6 +38,12 @@
     (log/infof "Will use HTTPS to talk to RabbitMQ HTTP API as %s..." (cfg/rabbitmq-administrator))
     (log/infof "Will use HTTP (not HTTPS) to talk to RabbitMQ HTTP API as %s..." (cfg/rabbitmq-administrator))))
 
+(defn log-if-broker-using-https
+  [config]
+  (if (cfg/broker-using-https? config)
+    (log/infof "Will use HTTPS to talk to RabbitMQ service broker")
+    (log/infof "Will use HTTP (not HTTPS) to talk to RabbitMQ service-broker")))
+
 (declare shutdown)
 (defn install-signal-traps
   []
@@ -257,6 +263,7 @@
   (cfg/init! config)
   (log/infof "Finalized own configuration")
   (log-if-using-tls config)
+  (log-if-broker-using-https config)
   (init-rabbitmq-connection! config)
   (start-http-server config))
 
