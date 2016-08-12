@@ -219,5 +219,5 @@
      (rabbitmq-administrator-uris final-config))
   ([m]
      (mapv
-       #(format "%s://%s:%d" http-scheme % management-ui-port)
+       #(format "%s://%s:%d" (http-scheme) % management-ui-port)
        (node-hosts m))))
