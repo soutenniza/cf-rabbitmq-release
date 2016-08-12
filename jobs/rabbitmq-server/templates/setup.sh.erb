@@ -146,7 +146,7 @@ disk_alarm_threshold = p("rabbitmq-server.disk_alarm_threshold")
 <% end %>
 
 <% if allow_amqp == false || (allow_amqp == nil && ssl) %>
-  SERVER_START_ARGs="${SERVER_START_ARGS} -rabbit tcp_listener []"
+  SERVER_START_ARGS="${SERVER_START_ARGS} -rabbit tcp_listeners []"
 <% end %>
 
   # enclosing single quote, see the concatenation comment above
